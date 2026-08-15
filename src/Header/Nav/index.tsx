@@ -3,23 +3,50 @@
 import React from 'react'
 
 import type { Header as HeaderType } from '@/payload-types'
+import type { NavPage } from '@/utilities/getNavPages'
 
 import { CMSLink } from '@/components/Link'
-import Link from 'next/link'
-import { SearchIcon } from 'lucide-react'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
-export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
-  const navItems = data?.navItems || []
+export const HeaderNav: React.FC<{
+  data: HeaderType
+  pages?: NavPage[] | null
+}> = ({ data, pages }) => {
+  const autoPages = data?.showAllPages && pages ? pages : []
+  const autoHrefs = new Set(autoPages.map((page) => page.href))
+
+  const manualItems = (data?.navItems || []).filter(({ link }) => {
+    if (!link) return false
+
+    const href =
+      link.type === 'reference' && typeof link.reference?.value === 'object'
+        ? link.reference.value.slug
+          ? `${link.reference.relationTo !== 'pages' ? `/${link.reference.relationTo}` : ''}/${
+              link.reference.value.slug
+            }`
+          : null
+        : link.url
+
+    return href ? !autoHrefs.has(href) : true
+  })
 
   return (
     <nav className="flex gap-3 items-center">
-      {navItems.map(({ link }, i) => {
+      {autoPages.map((page) => {
+        return (
+          <CMSLink
+            key={page.href}
+            type="custom"
+            url={page.href}
+            label={page.label}
+            appearance="link"
+          />
+        )
+      })}
+      {manualItems.map(({ link }, i) => {
         return <CMSLink key={i} {...link} appearance="link" />
       })}
-      <Link href="/search">
-        <span className="sr-only">Search</span>
-        <SearchIcon className="w-5 text-primary" />
-      </Link>
+      <ThemeToggle />
     </nav>
   )
 }

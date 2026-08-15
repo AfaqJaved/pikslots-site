@@ -1,5 +1,46 @@
-import PageTemplate, { generateMetadata } from './[slug]/page'
+import type { Metadata } from 'next'
 
-export default PageTemplate
+import { PayloadRedirects } from '@/components/PayloadRedirects'
+import { HomePage } from '@/components/home/HomePage'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import { draftMode } from 'next/headers'
+import React, { cache } from 'react'
 
-export { generateMetadata }
+import { generateMeta } from '@/utilities/generateMeta'
+
+export default async function Page() {
+  return (
+    <>
+      <PayloadRedirects disableNotFound url="/" />
+      <HomePage />
+    </>
+  )
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await queryHomePage()
+
+  return generateMeta({ doc: page })
+}
+
+const queryHomePage = cache(async () => {
+  const { isEnabled: draft } = await draftMode()
+
+  const payload = await getPayload({ config: configPromise })
+
+  const result = await payload.find({
+    collection: 'pages',
+    draft,
+    limit: 1,
+    pagination: false,
+    overrideAccess: draft,
+    where: {
+      slug: {
+        equals: 'home',
+      },
+    },
+  })
+
+  return result.docs?.[0] || null
+})

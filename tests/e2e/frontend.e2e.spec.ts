@@ -12,6 +12,13 @@ test.describe('Frontend', () => {
     await page.goto('http://localhost:3000')
     await expect(page).toHaveTitle(/Payload Website Template/)
     const heading = page.locator('h1').first()
-    await expect(heading).toHaveText('Payload Website Template')
+    await expect(heading).toHaveText('Organize your business with 24/7 automated online booking')
+  })
+
+  test('can load homepage at /home', async ({ page }) => {
+    await page.goto('http://localhost:3000/home')
+    await expect(page).toHaveTitle(/Payload Website Template/)
+    const heading = page.locator('h1').first()
+    await expect(heading).toHaveText('Organize your business with 24/7 automated online booking')
   })
 })

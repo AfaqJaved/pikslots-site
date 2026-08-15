@@ -123,6 +123,14 @@
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
+  --brand: #1b3d32;
+  --brand-hover: #0f2922;
+  --brand-light: #48a36c;
+  --accent-blue: #1d90f5;
+  --ink: #303a47;
+  --ink-muted: #556270;
+  --surface: #f6f8fc;
+  --star: #ffb41f;
 }
 
 [data-theme='dark'] {
@@ -161,6 +169,14 @@
   --success: oklch(28% 0.1 200deg);
   --warning: oklch(35% 0.08 70deg);
   --error: oklch(45% 0.1 25deg);
+  --brand: #48a36c;
+  --brand-hover: #3e9363;
+  --brand-light: #6fbf92;
+  --accent-blue: #4ba9f7;
+  --ink: #e6ecea;
+  --ink-muted: #9aa7a2;
+  --surface: #14211b;
+  --star: #ffb41f;
 }
 
 @theme inline {
@@ -203,6 +219,14 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-light: var(--brand-light);
+  --color-accent-blue: var(--accent-blue);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-surface: var(--surface);
+  --color-star: var(--star);
 }
 
 @layer base {
