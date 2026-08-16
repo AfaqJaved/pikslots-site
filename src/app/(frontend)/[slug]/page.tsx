@@ -14,25 +14,9 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs?.map(({ slug }) => {
-    return { slug }
-  })
-
-  return params
-}
+// Renders per-request instead of at build time, since the Docker build has no
+// access to the database (see prod/docker-compose.yml networking notes).
+export const dynamic = 'force-dynamic'
 
 type Args = {
   params: Promise<{

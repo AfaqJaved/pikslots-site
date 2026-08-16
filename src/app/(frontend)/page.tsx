@@ -9,6 +9,10 @@ import React, { cache } from 'react'
 
 import { generateMeta } from '@/utilities/generateMeta'
 
+// Renders per-request instead of at build time, since the Docker build has no
+// access to the database (see prod/docker-compose.yml networking notes).
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   return (
     <>
