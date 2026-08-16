@@ -30,18 +30,13 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# NEXT_PUBLIC_SERVER_URL is public by definition (inlined into the client bundle).
-# DATABASE_URL/PAYLOAD_SECRET are needed at build time because Payload's
-# generateStaticParams queries the DB during `next build`. Passed as build args
-# (via Portainer stack environment variables, not committed to git). These only
-# land in this intermediate "builder" stage, which is discarded from the final
-# "runner" image, so they don't end up in the shipped image's layers/history.
+# Inlined into the client bundle, so it must be known at build time. The
+# app never needs DATABASE_URL/PAYLOAD_SECRET during `next build` (the
+# DB-dependent routes render dynamically at request time instead), which
+# avoids the build having to reach Postgres on the internal Docker network
+# BuildKit's RUN steps can't join custom user-defined networks.
 ARG NEXT_PUBLIC_SERVER_URL
-ARG DATABASE_URL
-ARG PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
-ENV DATABASE_URL=$DATABASE_URL
-ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
@@ -54,7 +49,7 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV development
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
