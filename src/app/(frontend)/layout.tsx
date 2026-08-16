@@ -12,6 +12,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
+import Script from 'next/script'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -25,6 +26,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <Script
+          src="https://umami.afaqjaved.com/script.js"
+          data-website-id="c2e211b0-f114-4c6b-b5c0-b9ad6a6fb22f"
+          strategy="afterInteractive"
+        />
       </head>
       <body>
         <Providers>
