@@ -10,8 +10,8 @@ services:
     networks:
       - nginx
       - shared_postgres
-    env_file:
-      - .env
+    # env_file:
+    # - .env
 
 networks:
   nginx:
