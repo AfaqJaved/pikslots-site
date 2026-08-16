@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { HomePage } from '@/components/home/HomePage'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
@@ -26,13 +27,9 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
+  const params = pages.docs?.map(({ slug }) => {
+    return { slug }
+  })
 
   return params
 }
@@ -64,11 +61,15 @@ export default async function Page({ params: paramsPromise }: Args) {
     return <PayloadRedirects url={url} />
   }
 
+  if (slug === 'home') {
+    return <HomePage />
+  }
+
   const { hero, layout } = page
 
   return (
     <article className="pt-16 pb-24">
-      <PageClient />
+      <PageClient heroType={page.hero?.type} />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
@@ -99,6 +100,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const result = await payload.find({
     collection: 'pages',
     draft,
+    depth: 1,
     limit: 1,
     pagination: false,
     overrideAccess: draft,
