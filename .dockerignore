@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.env
+.env.*
+prod/secrets
+prod/variables.env
+*.log
+.DS_Store
