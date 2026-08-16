@@ -15,20 +15,24 @@ interface HeaderClientProps {
 }
 
 export const HeaderClient: React.FC<HeaderClientProps> = ({ data, pages }) => {
-  /* Storing the value in a useState to avoid hydration errors */
-  const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
+
+  /* Only apply a forced `data-theme` after hydration to avoid a mismatch.
+  When no theme is forced, the header inherits the global theme from <html>,
+  so the logo and nav stay visible in both light and dark mode. */
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     setHeaderTheme(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
-  useEffect(() => {
-    if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [headerTheme])
+  const effectiveTheme = mounted && headerTheme ? headerTheme : null
 
   const logo = data?.logo
 
@@ -40,14 +44,19 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, pages }) => {
       <img src={logo.image.url} alt={logo.text || 'Logo'} className="h-9 w-auto" />
     )
   } else if (logo && logo.type !== 'image') {
-    logoContent = <span className="text-2xl font-bold text-ink">{logo.text || 'PikSlots'}</span>
+    logoContent = <span className="text-2xl font-bold tracking-tight text-ink">{logo.text || 'PikSlots'}</span>
   }
 
   return (
-    <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
-      <div className="py-8 flex justify-between">
+    <header
+      className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md"
+      {...(effectiveTheme ? { 'data-theme': effectiveTheme } : {})}
+    >
+      <div className="container flex items-center justify-between py-4">
         {logoContent ? (
-          <Link href="/">{logoContent}</Link>
+          <Link href="/" aria-label="Home">
+            {logoContent}
+          </Link>
         ) : (
           <span className="flex-1" aria-hidden="true" />
         )}

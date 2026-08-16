@@ -49,7 +49,7 @@ const DEFAULT_HERO: Hero = {
   primaryCtaLabel: 'Start FREE',
   primaryCtaLink: '/contact',
   secondaryCtaLabel: 'Book a demo',
-  secondaryCtaLink: '/posts',
+  secondaryCtaLink: '/about',
 }
 
 const DEFAULT_STATS: Stat[] = [
@@ -327,7 +327,7 @@ const Hero: React.FC<{ hero: Hero }> = ({ hero }) => {
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <PrimaryButton href={hero.primaryCtaLink || '/'}>{hero.primaryCtaLabel}</PrimaryButton>
             <a
-              href={hero.secondaryCtaLink || '/posts'}
+              href={hero.secondaryCtaLink || '/about'}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-brand px-8 py-4 font-semibold text-brand transition-colors hover:bg-brand/5"
             >
               {hero.secondaryCtaLabel}
@@ -669,14 +669,7 @@ const FinalCTA: React.FC<{ cta: CtaBanner }> = ({ cta }) => {
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">{cta.subtitle}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <a
-              href={cta.primaryCtaLink || '/contact'}
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 font-semibold text-brand transition-colors hover:bg-white/90"
-            >
-              {cta.primaryCtaLabel}
-              <ArrowRight className="size-4" />
-            </a>
-            <a
-              href="/posts"
+              href="/about"
               className="inline-flex items-center gap-2 rounded-lg border border-white/40 px-8 py-4 font-semibold text-white transition-colors hover:bg-white/10"
             >
               Book a demo
