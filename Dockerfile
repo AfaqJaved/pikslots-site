@@ -30,15 +30,20 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# Public by definition (gets inlined into the client bundle), so a plain ARG is fine.
-ARG NEXT_PUBLIC_SERVER_URL
-ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
-
+# NEXT_PUBLIC_SERVER_URL is public by definition (inlined into the client bundle).
 # DATABASE_URL/PAYLOAD_SECRET are needed at build time because Payload's
-# generateStaticParams queries the DB during `next build`. Mounted as BuildKit
-# secrets (not ARG/ENV) so they don't persist in image layers or `docker history`.
-RUN --mount=type=secret,id=database_url,env=DATABASE_URL \
-  --mount=type=secret,id=payload_secret,env=PAYLOAD_SECRET \
+# generateStaticParams queries the DB during `next build`. Passed as build args
+# (via Portainer stack environment variables, not committed to git). These only
+# land in this intermediate "builder" stage, which is discarded from the final
+# "runner" image, so they don't end up in the shipped image's layers/history.
+ARG NEXT_PUBLIC_SERVER_URL
+ARG DATABASE_URL
+ARG PAYLOAD_SECRET
+ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ENV DATABASE_URL=$DATABASE_URL
+ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
+
+RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
