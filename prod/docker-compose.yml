@@ -1,10 +1,27 @@
 services:
+  migrate:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: migrator
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    networks:
+      - shared_postgres
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+
   payload:
     build:
       context: ..
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     #ports:
     #  - '3000:3000'
     networks:

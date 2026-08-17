@@ -1,7 +1,7 @@
-# To use this Dockerfile, you have to set `output: 'standalone'` in your next.config.js file.
+# Dockerfile
 # From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 
-FROM node:22.17.0-alpine AS base
+FROM node:24-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -30,14 +30,6 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# Inlined into the client bundle, so it must be known at build time. The
-# app never needs DATABASE_URL/PAYLOAD_SECRET during `next build` (the
-# DB-dependent routes render dynamically at request time instead), which
-# avoids the build having to reach Postgres on the internal Docker network
-# BuildKit's RUN steps can't join custom user-defined networks.
-ARG NEXT_PUBLIC_SERVER_URL
-ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
-
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
@@ -45,18 +37,30 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
+
+
+# TODO Migration start
+# Migration image, reuses the full builder output (source + all deps) so the
+# payload CLI can load payload.config.ts and run migrations before the app starts
+FROM builder AS migrator
+WORKDIR /app
+CMD ["pnpm", "run", "migrate"]
+
+#
+# TODO Migration end
+
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV development
+ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Remove this line if you do not have this folder
 COPY --from=builder /app/public ./public
 
 # Set the correct permission for prerender cache
