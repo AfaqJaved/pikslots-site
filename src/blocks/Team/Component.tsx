@@ -1,8 +1,13 @@
 import React from 'react'
 
 import type { TeamBlock as TeamBlockProps } from '@/payload-types'
+import type { Team } from '@/payload-types'
 
 export const TeamBlock: React.FC<TeamBlockProps> = ({ heading, intro, members }) => {
+  const resolvedMembers = (members || []).filter(
+    (m): m is Team => typeof m === 'object' && m !== null && 'name' in m,
+  )
+
   return (
     <section className="container">
       <div className="mx-auto mb-12 max-w-2xl text-center">
@@ -10,9 +15,9 @@ export const TeamBlock: React.FC<TeamBlockProps> = ({ heading, intro, members })
         {intro && <p className="mt-4 text-lg text-ink-muted">{intro}</p>}
       </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {(members || []).map((member) => (
+        {resolvedMembers.map((member) => (
           <div
-            key={member.name}
+            key={member.id}
             className="flex flex-col items-center rounded-2xl border border-border bg-card p-6 text-center"
           >
             {member.image && typeof member.image === 'object' && member.image.url ? (

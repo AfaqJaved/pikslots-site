@@ -3,12 +3,14 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { ContactBlock } from '@/blocks/Contact/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { TeamBlock } from '@/blocks/Team/Component'
 
 const blockComponents = {
   content: ContentBlock,
+  contact: ContactBlock,
   cta: CallToActionBlock,
   mediaBlock: MediaBlock,
   team: TeamBlock,

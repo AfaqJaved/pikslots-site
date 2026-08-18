@@ -20,37 +20,11 @@ export const Team: Block = {
     },
     {
       name: 'members',
-      type: 'array',
+      type: 'relationship',
+      relationTo: 'team',
+      hasMany: true,
       label: 'Team members',
-      minRows: 1,
-      admin: {
-        initCollapsed: true,
-      },
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          label: 'Name',
-          required: true,
-        },
-        {
-          name: 'role',
-          type: 'text',
-          label: 'Role',
-          required: true,
-        },
-        {
-          name: 'description',
-          type: 'textarea',
-          label: 'Description',
-        },
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'Photo',
-        },
-      ],
+      required: true,
     },
   ],
 }

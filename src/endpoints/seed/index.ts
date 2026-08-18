@@ -1,6 +1,6 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest } from 'payload'
 
-const collections: CollectionSlug[] = ['media', 'pages']
+const collections: CollectionSlug[] = ['media', 'pages', 'team']
 
 const globals: GlobalSlug[] = ['header', 'footer', 'homepage']
 
@@ -43,6 +43,28 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding pages...`)
 
+  const dev1 = await payload.create({
+    collection: 'team',
+    depth: 0,
+    data: {
+      name: 'Developer 1',
+      role: 'Role / title',
+      description: 'Add a short description and upload a photo.',
+      order: 0,
+    },
+  })
+
+  const dev2 = await payload.create({
+    collection: 'team',
+    depth: 0,
+    data: {
+      name: 'Developer 2',
+      role: 'Role / title',
+      description: 'Add a short description and upload a photo.',
+      order: 1,
+    },
+  })
+
   await payload.create({
     collection: 'pages',
     depth: 0,
@@ -59,18 +81,7 @@ export const seed = async ({
           blockType: 'team',
           heading: 'Meet the team',
           intro: 'The developers who built this website.',
-          members: [
-            {
-              name: 'Developer 1',
-              role: 'Role / title',
-              description: 'Add a short description and upload a photo.',
-            },
-            {
-              name: 'Developer 2',
-              role: 'Role / title',
-              description: 'Add a short description and upload a photo.',
-            },
-          ],
+          members: [dev1.id, dev2.id],
         },
       ],
     },
