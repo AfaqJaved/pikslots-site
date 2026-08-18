@@ -69,8 +69,8 @@ export interface Config {
   collections: {
     pages: Page;
     media: Media;
+    team: Team;
     users: User;
-    todos: Todo;
     redirects: Redirect;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
@@ -87,8 +87,8 @@ export interface Config {
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    todos: TodosSelect<false> | TodosSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
@@ -105,11 +105,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     homepage: Homepage;
+    settings: Setting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    settings: SettingsSelect<false> | SettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -190,7 +192,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | TeamBlock)[];
+  layout: (CallToActionBlock | ContactBlock | ContentBlock | MediaBlock | TeamBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -373,6 +375,26 @@ export interface CallToActionBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactBlock".
+ */
+export interface ContactBlock {
+  heading?: string | null;
+  description?: string | null;
+  contactInfo?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  form?: {
+    submitLabel?: string | null;
+    successMessage?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contact';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
@@ -433,18 +455,27 @@ export interface MediaBlock {
 export interface TeamBlock {
   heading?: string | null;
   intro?: string | null;
-  members?:
-    | {
-        name: string;
-        role: string;
-        description?: string | null;
-        image?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
+  members: (number | Team)[];
   id?: string | null;
   blockName?: string | null;
   blockType: 'team';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  role: string;
+  description?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Controls the display order on the frontend (lower = first).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -471,17 +502,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "todos".
- */
-export interface Todo {
-  id: number;
-  title: string;
-  isCompleted: boolean;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -629,12 +649,12 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'team';
+        value: number | Team;
       } | null)
     | ({
-        relationTo: 'todos';
-        value: number | Todo;
+        relationTo: 'users';
+        value: number | User;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -718,6 +738,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         cta?: T | CallToActionBlockSelect<T>;
+        contact?: T | ContactBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
         team?: T | TeamBlockSelect<T>;
@@ -756,6 +777,29 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
               appearance?: T;
             };
         id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactBlock_select".
+ */
+export interface ContactBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  contactInfo?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  form?:
+    | T
+    | {
+        submitLabel?: T;
+        successMessage?: T;
       };
   id?: T;
   blockName?: T;
@@ -802,15 +846,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
 export interface TeamBlockSelect<T extends boolean = true> {
   heading?: T;
   intro?: T;
-  members?:
-    | T
-    | {
-        name?: T;
-        role?: T;
-        description?: T;
-        image?: T;
-        id?: T;
-      };
+  members?: T;
   id?: T;
   blockName?: T;
 }
@@ -910,6 +946,19 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  description?: T;
+  image?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -930,16 +979,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "todos_select".
- */
-export interface TodosSelect<T extends boolean = true> {
-  title?: T;
-  isCompleted?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1206,6 +1245,19 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: number;
+  /**
+   * Enter a hex color code (e.g. #3B21B6). Hover and light variants are auto-calculated.
+   */
+  primaryColor: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1358,6 +1410,16 @@ export interface HomepageSelect<T extends boolean = true> {
         primaryCtaLabel?: T;
         primaryCtaLink?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  primaryColor?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

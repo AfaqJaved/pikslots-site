@@ -62,12 +62,24 @@ export const HeaderNav: React.FC<{
             {item.label}
           </Link>
         ))}
-        <div className="ml-2">
+        <div className="ml-2 flex items-center gap-2">
+          <Link
+            href="/admin"
+            className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+          >
+            Login
+          </Link>
           <ThemeToggle />
         </div>
       </nav>
 
       <div className="flex items-center gap-2 md:hidden">
+        <Link
+          href="/admin"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+        >
+          Login
+        </Link>
         <ThemeToggle />
         <button
           type="button"

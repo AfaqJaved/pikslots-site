@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url'
 
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { Team } from './collections/Team'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -13,7 +14,7 @@ import { Homepage } from './globals/Homepage'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
-import { Todos } from './collections/Todos'
+import { Settings } from './globals/Settings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -21,15 +22,25 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
-      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
       beforeDashboard: ['@/components/BeforeDashboard'],
+      graphics: {
+        Icon: '@/graphics/Icon/index#Icon',
+        Logo: '@/graphics/Logo/index#Logo',
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),
+    },
+    meta: {
+      titleSuffix: '- PikSlots',
+      icons: [
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          url: '/favicon.svg',
+        },
+      ],
     },
     user: Users.slug,
     livePreview: {
@@ -63,9 +74,9 @@ export default buildConfig({
     },
     push: false,
   }),
-  collections: [Pages, Media, Users, Todos],
+  collections: [Pages, Media, Team, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage],
+  globals: [Header, Footer, Homepage, Settings],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
